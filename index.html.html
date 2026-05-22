@@ -1,0 +1,2020 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>外部共通6小時法令遵循課程－受訓年度校正器 v6.2.2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../lib/common-report-ui.css">
+    <style>
+        /* =========================================================
+       01. Tokens / Base
+       ========================================================= */
+        :root {
+            --primary: #00a19b;
+            --primary-1: #F4F8FA;
+            --primary-8: #00a19b;
+            --text: #1c1c1c;
+            --muted: #7C7C7C;
+            --error: #c92e34;
+            --highlight-orange: #E66900;
+            --success: #00a19b;
+            --disabled: #ACACAC;
+            --border: #D9D9D9;
+            --shadow: rgba(64, 157, 153, .2);
+            --mask: rgba(28, 28, 28, .7);
+            --page-bg: #E1EFEF;
+            --white: #fff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--text);
+            background: var(--page-bg);
+            font-family: "Microsoft JhengHei", "DFKai-SB", "標楷體", Arial, sans-serif;
+        }
+
+        a {
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* =========================================================
+       02. Layout / App Shell
+       ========================================================= */
+        .page-wrap {
+            width: 100%;
+            padding: 32px 16px;
+        }
+
+        .app-card {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 28px;
+            background: var(--white);
+            border-radius: 4px;
+            box-shadow: 0 8px 28px var(--shadow);
+        }
+
+        .app-title {
+            margin: 0 0 8px;
+            color: var(--primary);
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .app-desc {
+            margin: 0 0 24px;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .section-title {
+            margin: 28px 0 16px;
+            padding-bottom: 8px;
+            color: var(--primary-8);
+            font-size: 22px;
+            font-weight: 700;
+            border-bottom: 2px solid var(--primary-8);
+        }
+
+        .hint {
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .warning {
+            margin-top: 10px;
+            color: var(--error);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        /* =========================================================
+       03. Company Steps / Timeline Stepper
+       ========================================================= */
+        .steps {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 18px 0 8px;
+        }
+
+        .steps .stepsList {
+            list-style: none;
+            display: flex;
+            margin: 10px 0;
+            padding: 0;
+        }
+
+        .steps .stepsList .stepsName {
+            background-color: var(--primary);
+            border-radius: 50px;
+            color: #fff;
+            font-size: 14px;
+            margin: 6px;
+            padding: 5px 15px 5px 6px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .steps .stepsList .stepsName::after {
+            content: "";
+            width: 40px;
+            height: 4px;
+            position: absolute;
+            background: var(--border);
+            margin: auto;
+            top: 50%;
+            transform: translateY(-50%);
+            right: -40px;
+        }
+
+        .steps .stepsList .stepsName:last-child::after {
+            display: none;
+        }
+
+        .steps .stepsList .stepsName .stepsNum {
+            width: 24px;
+            height: 24px;
+            text-align: center;
+            line-height: 22px;
+            border-radius: 100%;
+            background-color: var(--primary);
+            padding: 0;
+            margin: 0 6px 0 0;
+        }
+
+        .steps .stepsList .stepsName .stepsTxt {
+            vertical-align: middle;
+        }
+
+        .steps .stepsList .done {
+            background-color: transparent;
+        }
+
+        .steps .stepsList .done::after {
+            background: var(--primary);
+        }
+
+        .steps .stepsList .done .stepsTxt {
+            display: none;
+        }
+
+        .steps .stepsList .todo {
+            background-color: transparent;
+            padding: 5px 0 5px 6px;
+        }
+
+        .steps .stepsList .todo .stepsNum {
+            background-color: var(--border);
+            color: var(--text);
+        }
+
+        .steps .stepsList .todo .stepsTxt {
+            color: var(--text);
+            display: none;
+        }
+
+        .clickable-step {
+          cursor: pointer;
+          transition: transform .18s ease, opacity .18s ease, box-shadow .18s ease;
+        }
+
+        .clickable-step:hover {
+          transform: translateY(-2px);
+          opacity: .92;
+        }
+
+        .clickable-step:focus-visible {
+          outline: 3px solid rgba(0, 161, 155, .28);
+          outline-offset: 4px;
+        }
+
+        .clickable-step.step-locked {
+          cursor: not-allowed;
+          opacity: .55;
+        }
+
+        .clickable-step.step-locked:hover {
+          transform: none;
+          opacity: .55;
+        }
+
+        @media (min-width:768px) {
+            .steps .stepsList .done {
+                background-color: var(--primary);
+            }
+
+            .steps .stepsList .done .stepsTxt,
+            .steps .stepsList .todo .stepsTxt {
+                display: block;
+            }
+
+            .steps .stepsList .todo {
+                background-color: var(--border);
+                padding: 5px 15px 5px 6px;
+            }
+
+            .steps .stepsList .done::after {
+                width: 60px;
+                right: -60px;
+            }
+        }
+
+        @media (min-width:992px) {
+            .steps .stepsList .stepsName {
+                margin: 16px 8px;
+                font-size: 18px;
+                width: 186px;
+                padding: 10px;
+            }
+
+            .steps .stepsList .stepsName::after {
+                width: 60px;
+                right: -60px;
+            }
+        }
+
+        @media (max-width:768px) {
+            .steps .stepsList {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .steps .stepsList .stepsName .stepsTxt {
+                width: 100px;
+                font-size: 16px;
+                padding: 2px 0;
+            }
+
+            .steps .stepsList .done {
+                padding-right: 6px;
+                margin: 0;
+            }
+
+            .steps .stepsList .done::after {
+                right: -28px;
+            }
+        }
+
+        /* =========================================================
+       04. Step Panels / Cards
+       ========================================================= */
+        .step-panel {
+            display: none;
+            margin-top: 24px;
+        }
+
+        .step-panel.active {
+            display: block;
+        }
+
+        .step-card {
+            padding: 18px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: #fff;
+        }
+
+        .step-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .info-list {
+            margin: 0;
+            padding-left: 24px;
+            line-height: 1.9;
+        }
+
+        .info-list ul {
+            margin-top: 4px;
+            margin-bottom: 4px;
+        }
+
+        .info-list li {
+            margin-bottom: 6px;
+        }
+
+        /* =========================================================
+       05. Forms / Upload / ROC Date Picker
+       ========================================================= */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px 24px;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 50px;
+        }
+
+        .form-row.full {
+            grid-column: 1 / -1;
+        }
+
+        .field-label {
+            width: 152px;
+            min-width: 152px;
+            height: 50px;
+            display: inline-flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        select {
+            width: 276px;
+            height: 50px;
+            padding: 0 14px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            background: #fff;
+            font-family: inherit;
+            font-size: 16px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: 2px solid rgba(0, 161, 155, .18);
+            border-color: var(--primary);
+        }
+
+        input[type="file"] {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        input[type="color"] {
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .file-picker {
+            width: 724px;
+            max-width: 100%;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .file-btn {
+            width: 132px;
+            min-width: 132px;
+            height: 50px;
+            margin: 0;
+            padding: 0;
+            align-self: stretch;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            background: var(--primary);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .file-name {
+            flex: 1;
+            padding: 0 14px;
+            color: var(--muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 16px;
+        }
+
+        .file-name.selected {
+            color: var(--text);
+        }
+
+        .readonly-result {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .roc-date-picker {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: nowrap;
+        }
+
+        .roc-date-picker input {
+            width: 88px;
+            height: 50px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 700;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            background: #fff;
+        }
+
+        .roc-date-picker input[readonly] {
+            background: #f5f5f5;
+            color: #555;
+        }
+
+        .roc-date-picker.invalid input {
+            border-color: var(--error);
+        }
+
+        .date-unit {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* =========================================================
+       06. Buttons / Status / Modal / Toast
+       ========================================================= */
+        .button-bar {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            min-width: 120px;
+            height: 44px;
+            padding: 0 20px;
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            color: #fff;
+            background: var(--primary);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        button.secondary {
+            color: var(--primary);
+            background: #fff;
+        }
+
+        button:disabled {
+            border-color: var(--disabled);
+            background: var(--disabled);
+            cursor: not-allowed;
+        }
+
+        .status-box {
+            margin-top: 20px;
+            padding: 14px 16px;
+            border-left: 5px solid var(--primary);
+            background: var(--primary-1);
+            line-height: 1.7;
+            white-space: pre-line;
+        }
+
+        .status-box.error {
+            border-left-color: var(--error);
+            color: var(--error);
+            background: #fff5f5;
+        }
+
+        .modal-mask {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: var(--mask);
+            z-index: 9999;
+        }
+
+        .modal-mask.active {
+            display: flex;
+        }
+
+        .modal-box {
+            width: 80%;
+            max-width: 1000px;
+            max-height: 900px;
+            padding: 28px;
+            overflow: auto;
+            background: #fff;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, .18);
+        }
+
+        .modal-box h2 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+
+        .modal-message {
+            line-height: 1.8;
+            white-space: pre-line;
+        }
+
+        .modal-actions {
+            margin-top: 18px;
+        }
+
+        .toast-message {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 10000;
+            min-width: 180px;
+            max-width: 320px;
+            padding: 12px 16px;
+            border-radius: 4px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+            opacity: 0;
+            transform: translateY(12px);
+            pointer-events: none;
+            transition: opacity .18s ease, transform .18s ease;
+        }
+
+        .toast-message.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* =========================================================
+       07. Tables / Collapsible Blocks / KPI
+       ========================================================= */
+        .collapsible-block {
+            margin-top: 20px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .collapse-title {
+            width: 100%;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border: 0;
+            border-radius: 0;
+            color: var(--primary);
+            background: var(--primary-1);
+            text-align: left;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .collapse-title::after {
+            content: "[-]";
+            color: var(--primary);
+            font-size: 22px;
+        }
+
+        .collapse-title.collapsed::after {
+            content: "[+]";
+        }
+
+        .collapse-content {
+            display: block;
+            padding: 16px;
+        }
+
+        .collapse-content.hidden {
+            display: none;
+        }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            white-space: nowrap;
+        }
+
+        th {
+            padding: 8px 16px;
+            color: #fff;
+            background: var(--primary-8);
+            border: 1px solid var(--border);
+            text-align: center;
+            font-weight: 700;
+        }
+
+        td {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .result {
+            margin-top: 20px;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 8px 0 18px;
+        }
+
+        .kpi-card {
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--primary-1);
+            text-align: center;
+        }
+
+        .kpi-value {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .kpi-label {
+            margin-top: 4px;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 13px;
+            background: var(--primary-1);
+            color: var(--primary);
+        }
+
+        .status-badge.warn {
+            background: #fff7ed;
+            color: var(--highlight-orange);
+        }
+
+        .status-badge.error {
+            background: #fff5f5;
+            color: var(--error);
+        }
+
+        /* =========================================================
+       08. Result Tabs
+       ========================================================= */
+        .tab {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .tab .uk-switcher {
+            background: var(--page-bg);
+            border-radius: 10px;
+            padding: 20px;
+            list-style: none;
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .uk-tab {
+            max-width: 860px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            list-style: none;
+            padding-left: 0;
+            position: relative;
+        }
+
+        .uk-tab>li {
+            display: inline-block !important;
+            width: calc(100% / 2);
+            padding-left: 0;
+            position: relative;
+            text-align: center;
+        }
+
+        .uk-tab>li a {
+            font-size: 18px;
+            color: var(--text);
+            text-decoration: none;
+            display: block;
+            padding: 12px 8px 16px;
+        }
+
+        .uk-tab>.uk-active::after {
+            content: "";
+            width: 100%;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 10px;
+            display: block;
+            position: absolute;
+            bottom: -4px;
+            right: 0;
+        }
+
+        .uk-tab>.uk-active>a {
+            color: var(--primary);
+            font-weight: bold;
+            border: 0;
+        }
+
+        .uk-tab::before {
+            display: none;
+        }
+
+        .uk-tab::after {
+            content: "";
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--page-bg);
+            border-radius: 10px;
+            position: absolute;
+            z-index: 0;
+        }
+
+        .uk-switcher>li {
+            display: none;
+        }
+
+        .uk-switcher>li.uk-active {
+            display: block;
+        }
+
+
+        /* =========================================================
+       09. Course Catalog / Correction Detail Modal
+       ========================================================= */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .badge-ok {
+            background: #edfafa;
+            color: var(--primary);
+        }
+
+        .badge-blue {
+            background: #eef4ff;
+            color: #2563eb;
+        }
+
+        .badge-warn {
+            background: #fff7ed;
+            color: var(--highlight-orange);
+        }
+
+        .badge-danger {
+            background: #fff5f5;
+            color: var(--error);
+        }
+
+        .badge-muted {
+            background: #f3f4f6;
+            color: var(--muted);
+        }
+
+        .left {
+            text-align: left;
+        }
+
+        .ok,
+        .split {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .unused {
+            color: var(--highlight-orange);
+            font-weight: 700;
+        }
+
+        .danger {
+            color: var(--error);
+            font-weight: 700;
+        }
+
+        .course-name-cell {
+            min-width: 260px;
+            text-align: left;
+            white-space: normal;
+            line-height: 1.6;
+        }
+
+        .correction-card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            text-align: left;
+        }
+
+        .correction-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #fff;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .04);
+        }
+
+        .correction-card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 12px;
+            background: var(--primary-1);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .correction-card-body {
+            padding: 12px 14px;
+            line-height: 1.9;
+            font-size: 15px;
+        }
+
+        .correction-card-body .label {
+            display: inline-block;
+            min-width: 110px;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .detail-modal-box {
+            max-width: 1120px;
+            text-align: left;
+        }
+
+        .detail-modal-box h2 {
+            text-align: center;
+        }
+
+        .detail-modal-body {
+            white-space: normal;
+        }
+
+        .detail-modal-body .table-wrap {
+            max-height: 65vh;
+            overflow: auto;
+        }
+
+        .detail-modal-body table {
+            white-space: normal;
+        }
+
+        .year-empty-detail {
+            padding: 14px;
+            color: var(--muted);
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+
+        /* v6.2.2 Detail Modal / Result readability fixes */
+        .detail-modal-box {
+            width: min(1120px, calc(100vw - 32px));
+            max-height: calc(100vh - 48px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .detail-modal-body {
+            flex: 1;
+            min-height: 0;
+            overflow: auto;
+            padding-right: 4px;
+        }
+
+        .detail-modal-body .table-wrap {
+            max-height: none;
+            overflow: auto;
+        }
+
+        .modal-actions.modal-sticky-actions,
+        .detail-modal-box .modal-actions {
+            position: sticky;
+            bottom: -28px;
+            margin: 18px -28px -28px;
+            padding: 14px 28px;
+            background: #fff;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            z-index: 2;
+        }
+
+        .detail-modal-body .correction-card-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .detail-modal-body .correction-card {
+            overflow: visible;
+        }
+
+        .detail-modal-body .correction-card-head,
+        .detail-modal-body .correction-card-body {
+            word-break: break-word;
+        }
+
+        .audit-detail-table {
+            table-layout: auto;
+            white-space: nowrap;
+        }
+
+        .audit-detail-table th,
+        .audit-detail-table td {
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        .audit-detail-table .course-name-cell {
+            min-width: 200px;
+            max-width: 200px;
+            white-space: normal;
+        }
+
+        .year-summary-table th,
+        .year-summary-table td {
+            white-space: nowrap;
+        }
+
+        /* =========================================================
+       10. Responsive
+       ========================================================= */
+        @media (max-width:900px) {
+            .app-card {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .field-label {
+                width: auto;
+                min-width: 0;
+                height: auto;
+            }
+
+            input[type="text"],
+            input[type="date"],
+            select,
+            .file-picker {
+                width: 100% !important;
+            }
+
+            .readonly-result {
+                width: 100%;
+            }
+
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width:768px) {
+            .uk-tab {
+                display: block;
+            }
+
+            .uk-tab>li {
+                width: 100%;
+            }
+
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .roc-date-picker {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrap">
+        <main class="app-card">
+            <h1 class="app-title">外部共通6小時法令遵循課程－受訓年度校正器 v6.2.2</h1>
+            <p class="app-desc">基於「人身保險業務員教育訓練要點」附屬法規「人身保險業務員教育訓練通報暨換證作業規範」第4條第1項規範進行各課程完訓日期之年度校正。</p>
+
+            <div class="steps" aria-label="作業流程">
+                <ol class="stepsList">
+                    <li id="step1" class="stepsName active clickable-step" data-step="1" role="button" tabindex="0" aria-current="step">
+                        <div class="stepsNum">1</div>
+                        <div class="stepsTxt">使用說明</div>
+                    </li>
+                    <li id="step2" class="stepsName todo clickable-step" data-step="2" role="button" tabindex="0">
+                        <div class="stepsNum">2</div>
+                        <div class="stepsTxt">上傳查詢結果</div>
+                    </li>
+                    <li id="step3" class="stepsName todo clickable-step" data-step="3" role="button" tabindex="0">
+                        <div class="stepsNum">3</div>
+                        <div class="stepsTxt">解析查詢結果</div>
+                    </li>
+                    <li id="step4" class="stepsName todo clickable-step" data-step="4" role="button" tabindex="0">
+                        <div class="stepsNum">4</div>
+                        <div class="stepsTxt">校正受訓年度</div>
+                    </li>
+                </ol>
+            </div>
+
+            <section id="panel1" class="step-panel active">
+                <h2 class="section-title">1 使用說明</h2>
+                <div class="step-card">
+                    <ol class="info-list">
+                        <li>本工具僅讀取使用者自行取得的查詢結果，不代替使用者登入、不自動查詢、不回傳資料。</li>
+                        <li>本工具將查詢結果作為原始資料來源。</li>
+                        <li>基於「人身保險業務員教育訓練要點」第2條第6項規範，提供「產險初登錄日」為選填；若填寫，系統會另行計算產險年度校正結果。</li>
+                    </ol>
+                    <div class="status-box">免責聲明：本工具僅為內部輔助判斷工具，實際校正結果仍應以壽險公會提供各會員公司之行政作業連線系統查詢結果為準。</div>
+                    <div class="step-actions"><button type="button" id="goStep2">下一步</button></div>
+                </div>
+            </section>
+
+            <section id="panel2" class="step-panel">
+                <h2 class="section-title">2 上傳查詢結果</h2>
+                <div class="step-card">
+                    <ol class="info-list">
+                        <li>進入「<a href="https://public.liaroc.org.tw/lia-public/indexUsr.jsp" target="_blank" rel="noopener">壽險業務員法令遵循課程記錄查詢</a>」完成查詢。</li>
+                        <li>使用快捷鍵（ Ctrl + S 或 Cmd + S ）將查詢結果另存「完整的網頁」或「網頁原始檔」（.html、.htm 檔）。</li>
+                        <li>本工具固定以 Big5 解析。</li>
+                    </ol>
+                    <div class="form-grid" style="margin-top:12px;">
+                        <div class="form-row full">
+                            <label class="field-label">上傳完整網頁檔</label>
+                            <div class="file-picker">
+                                <label class="file-btn" for="liaHtmlUpload">選擇檔案</label>
+                                <div id="liaHtmlFileName" class="file-name">尚未選擇檔案</div>
+                                <input type="file" id="liaHtmlUpload" accept=".html,.htm,text/html">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="parseMessage" class="status-box">尚未匯入查詢結果檔。</div>
+                    <div class="step-actions">
+                        <button type="button" class="secondary" data-goto="1">上一步</button>
+                        <button type="button" id="parseAndGoStep3">下一步</button>
+                        <button type="button" id="clearBtn" class="secondary">清除</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel3" class="step-panel">
+                <h2 class="section-title">3 解析查詢結果</h2>
+                <div class="step-card">
+                    <div class="form-grid">
+                        <div class="form-row full">
+                            <label class="field-label">壽險初次登錄日</label>
+                            <div class="readonly-result">
+                                <div class="roc-date-picker readonly" data-prefix="life">
+                                    <input id="lifeRocYear" class="roc-year-input" list="rocYearList" inputmode="numeric" maxlength="3" placeholder="年" readonly>
+                                    <span class="date-unit">年</span>
+                                    <input id="lifeMonth" list="monthList" inputmode="numeric" maxlength="2" placeholder="月" readonly>
+                                    <span class="date-unit">月</span>
+                                    <input id="lifeDay" list="lifeDayList" inputmode="numeric" maxlength="2" placeholder="日" readonly>
+                                    <span class="date-unit">日</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <label class="field-label">產險初次登錄日</label>
+                            <div class="readonly-result">
+                                <div class="roc-date-picker" data-prefix="nonlife">
+                                    <input id="nonlifeRocYear" class="roc-year-input" list="rocYearList" inputmode="numeric" maxlength="3" placeholder="年">
+                                    <span class="date-unit">年</span>
+                                    <input id="nonlifeMonth" list="monthList" inputmode="numeric" maxlength="2" placeholder="月">
+                                    <span class="date-unit">月</span>
+                                    <input id="nonlifeDay" list="nonlifeDayList" inputmode="numeric" maxlength="2" placeholder="日">
+                                    <span class="date-unit">日</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="status-box"><b>壽險初次登錄日</b>由上傳檔案自動解析；<b>產險初登錄日</b>為選填，欄位可直接輸入或使用下拉選項。</div>
+                        </div>
+                    </div>
+                    <datalist id="rocYearList"></datalist>
+                    <datalist id="monthList"></datalist>
+                    <datalist id="lifeDayList"></datalist>
+                    <datalist id="nonlifeDayList"></datalist>
+
+                    <div class="collapsible-block" style="margin-top:16px;">
+                        <button class="collapse-title collapsed" type="button">課程完整清單</button>
+                        <div class="collapse-content hidden">
+                            <div class="table-wrap">
+                                <table id="courseTable">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>通報年度別</th>
+                                            <th>課程編碼</th>
+                                            <th>單元</th>
+                                            <th>課程名稱</th>
+                                            <th>完訓日期</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="courseBody">
+                                        <tr>
+                                            <td colspan="6" class="hint">尚未匯入資料。</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="courseError" class="warning"></div>
+                    <div class="step-actions">
+                        <button type="button" class="secondary" data-goto="2">上一步</button>
+                        <button type="button" id="calculateAndGoStep4">下一步</button>
+                        <button type="button" id="clearNonlifeBtn" class="secondary">清除產險初登錄日</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel4" class="step-panel">
+                <h2 class="section-title">4 校正受訓年度</h2>
+                <div class="step-card">
+                    <div id="kpiArea"></div>
+                    <div id="output" class="result"></div>
+                    <div class="step-actions">
+                        <button type="button" class="secondary" data-goto="3">上一步</button>
+                        <button type="button" id="returnStep1Btn" class="secondary">返回</button>
+                    </div>
+                </div>
+            </section>
+
+            <div id="toast" class="toast-message"></div>
+        </main>
+    </div>
+
+    <div id="successModal" class="modal-mask" role="dialog" aria-modal="true">
+        <div class="modal-box">
+            <h2>解析成功</h2>
+            <div id="successModalMessage" class="modal-message">已成功解析您上傳的查詢結果檔案！</div>
+            <div class="modal-actions"><button type="button" id="successModalOk">確認</button></div>
+        </div>
+    </div>
+
+    <div id="detailModal" class="modal-mask" role="dialog" aria-modal="true">
+        <div class="modal-box detail-modal-box">
+            <h2 id="detailModalTitle">年度明細</h2>
+            <div id="detailModalBody" class="modal-message detail-modal-body"></div>
+            <div class="modal-actions modal-sticky-actions"><button type="button" id="detailModalOk">關閉</button></div>
+        </div>
+    </div>
+
+    <script src="./course-catalog.js" charset="big5"></script>
+
+    <script>
+        const REQUIRED_UNITS = 12;
+        const MAX_YEARS = 80;
+        /* 課程教材對照表改由外部 course-catalog.js 提供，請與本 HTML 放在同一資料夾。
+           注意：course-catalog.js 的資料模型應為 { code, unit, courseName }。 */
+let detailModalStore = {};
+        let parsedRecords = [];
+        let latestLifeCorrection = null;
+        let latestNonlifeCorrection = null;
+        let latestHtmlText = '';
+        let latestFileName = '';
+        let suppressAutoReparse = false;
+        let currentStep = 1;
+
+        function showToast(message) {
+            const t = document.getElementById('toast');
+            t.textContent = message;
+            t.classList.add('active');
+            setTimeout(() => t.classList.remove('active'), 1600);
+        }
+
+        function updateSteps(step) {
+            currentStep = step;
+            ['step1', 'step2', 'step3', 'step4'].forEach((id, i) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const n = i + 1;
+                el.className = 'stepsName' + (n < step ? ' done' : n > step ? ' todo' : '');
+            });
+        }
+
+function showStep(step) {
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(`panel${step}`)?.classList.add('active');
+
+    updateSteps(step);
+
+    document.querySelectorAll(".clickable-step").forEach(el => {
+        el.removeAttribute("aria-current");
+    });
+
+    const activeStep = document.querySelector(`.clickable-step[data-step="${step}"]`);
+    if (activeStep) {
+        activeStep.setAttribute("aria-current", "step");
+    }
+
+    refreshStepClickableState();
+
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+function canGotoStep(stepNo) {
+  if (stepNo === 1) return true;
+  if (stepNo === 2) return true;
+  if (stepNo === 3) return appState.parsedCourses && appState.parsedCourses.length > 0;
+  if (stepNo === 4) return appState.correctionResults && appState.correctionResults.length > 0;
+  return false;
+}
+
+function refreshStepClickableState() {
+  document.querySelectorAll(".clickable-step").forEach(el => {
+    const stepNo = Number(el.dataset.step);
+    el.classList.toggle("step-locked", !canGotoStep(stepNo));
+    el.setAttribute("aria-disabled", canGotoStep(stepNo) ? "false" : "true");
+  });
+}
+
+function bindStepClickEvents() {
+  document.querySelectorAll(".clickable-step").forEach(el => {
+    el.addEventListener("click", () => {
+      const stepNo = Number(el.dataset.step);
+
+      if (!canGotoStep(stepNo)) {
+        showToast("請先完成前一步驟");
+        return;
+      }
+
+      showStep(stepNo);
+    });
+
+    el.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        el.click();
+      }
+    });
+  });
+}
+
+        function showSuccessModal(message) {
+            document.getElementById('successModalMessage').textContent = message;
+            document.getElementById('successModal').classList.add('active');
+        }
+
+        function hideSuccessModal() {
+            document.getElementById('successModal').classList.remove('active');
+        }
+
+        function escapeHtml(str){
+            return String(str??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        function cleanLiaCellValue(value){
+            return String(value??'').replace(/\u00a0/g,' ').replace(/&nbsp;/gi,' ').trim();
+        }
+
+        function getCourseMeta(code) {
+            const normalizedCode = String(code || '').trim();
+            const empty = {
+                code: normalizedCode,
+                unit: '-',
+                courseName: '-'
+            };
+
+            if (!window.CourseCatalog || typeof window.CourseCatalog.get !== 'function') {
+                return empty;
+            }
+
+            const info = window.CourseCatalog.get(normalizedCode) || empty;
+            return {
+                code: info.code || normalizedCode,
+                unit: info.unit || '-',
+                courseName: info.courseName || info.name || '-'
+            };
+        }
+
+        function formatDate(date) {
+            const y = date.getFullYear() - 1911;
+            const mm = String(date.getMonth() + 1).padStart(2, '0');
+            const dd = String(date.getDate()).padStart(2, '0');
+            return `${y}/${mm}/${dd}`;
+        }
+
+        function rocYear(date) {
+            return date.getFullYear() - 1911;
+        }
+
+        function normalizeRocDateText(value) {
+            const m = String(value || '').replace(/\s/g, '').replace(/-/g, '/').replace(/\./g, '/').match(/^(\d{2,3})\/(\d{1,2})\/(\d{1,2})$/);
+            if (!m) return '';
+            return `${parseInt(m[1],10)}/${String(parseInt(m[2],10)).padStart(2,'0')}/${String(parseInt(m[3],10)).padStart(2,'0')}`;
+        }
+
+        function parseRocDateStrict(value) {
+            const n = normalizeRocDateText(value);
+            if (!n) return null;
+            const [ry, m, d] = n.split('/').map(Number);
+            const y = ry + 1911;
+            const date = new Date(y, m - 1, d);
+            return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d ? date : null;
+        }
+
+        function daysInRocMonth(rocY, m) {
+            if (!rocY || !m) return 31;
+            return new Date(rocY + 1911, m, 0).getDate();
+        }
+
+        function currentRocYear() {
+            return new Date().getFullYear() - 1911;
+        }
+
+        function minRocYear() {
+            return currentRocYear() - 75;
+        }
+
+        function maxRocYear() {
+            return currentRocYear() + 5;
+        }
+
+        function populateDateLists() {
+            const yList = document.getElementById('rocYearList');
+            yList.innerHTML = '';
+            for (let y = minRocYear(); y <= maxRocYear(); y++) {
+                const o = document.createElement('option');
+                o.value = String(y).padStart(3, '0');
+                yList.appendChild(o);
+            }
+            const mList = document.getElementById('monthList');
+            mList.innerHTML = '';
+            for (let m = 1; m <= 12; m++) {
+                const o = document.createElement('option');
+                o.value = String(m).padStart(2, '0');
+                mList.appendChild(o);
+            }
+            updateDayList('life');
+            updateDayList('nonlife');
+        }
+
+        function updateDayList(prefix) {
+            const list = document.getElementById(`${prefix}DayList`);
+            if (!list) return;
+            const y = parseInt(document.getElementById(`${prefix}RocYear`).value, 10);
+            const m = parseInt(document.getElementById(`${prefix}Month`).value, 10);
+            const max = daysInRocMonth(y, m);
+            list.innerHTML = '';
+            for (let d = 1; d <= max; d++) {
+                const o = document.createElement('option');
+                o.value = String(d).padStart(2, '0');
+                list.appendChild(o);
+            }
+        }
+
+        function normalizeInputNumber(el, pad) {
+            const raw = String(el.value || '').trim();
+            if (!raw) {
+                el.value = '';
+                return;
+            }
+            const n = parseInt(raw, 10);
+            if (!Number.isNaN(n)) el.value = String(n).padStart(pad, '0');
+        }
+
+        function getRocPickerState(prefix) {
+            const yEl = document.getElementById(`${prefix}RocYear`),
+                mEl = document.getElementById(`${prefix}Month`),
+                dEl = document.getElementById(`${prefix}Day`);
+            const yRaw = (yEl.value || '').trim(),
+                mRaw = (mEl.value || '').trim(),
+                dRaw = (dEl.value || '').trim();
+            if (!yRaw && !mRaw && !dRaw) return {
+                state: 'empty',
+                value: ''
+            };
+            if (!yRaw || !mRaw || !dRaw) return {
+                state: 'partial',
+                value: null
+            };
+            const y = parseInt(yRaw, 10),
+                m = parseInt(mRaw, 10),
+                d = parseInt(dRaw, 10);
+            if (!Number.isInteger(y) || !Number.isInteger(m) || !Number.isInteger(d)) return {
+                state: 'invalid',
+                value: null
+            };
+            if (y < minRocYear() || y > maxRocYear() || m < 1 || m > 12 || d < 1 || d > daysInRocMonth(y, m)) return {
+                state: 'invalid',
+                value: null
+            };
+            return {
+                state: 'valid',
+                value: `${y}/${String(m).padStart(2,'0')}/${String(d).padStart(2,'0')}`
+            };
+        }
+
+        function getRocPickerValue(prefix) {
+            const s = getRocPickerState(prefix);
+            return s.state === 'empty' ? '' : (s.state === 'valid' ? s.value : null);
+        }
+
+        function setRocPickerValue(prefix, rocText, trigger = true) {
+            const n = normalizeRocDateText(rocText);
+            const yEl = document.getElementById(`${prefix}RocYear`),
+                mEl = document.getElementById(`${prefix}Month`),
+                dEl = document.getElementById(`${prefix}Day`);
+            suppressAutoReparse = true;
+            if (!n) {
+                yEl.value = '';
+                mEl.value = '';
+                dEl.value = '';
+            } else {
+                const [y, m, d] = n.split('/').map(Number);
+                yEl.value = String(y).padStart(3, '0');
+                mEl.value = String(m).padStart(2, '0');
+                updateDayList(prefix);
+                dEl.value = String(d).padStart(2, '0');
+            }
+            markPickerValidity(prefix);
+            suppressAutoReparse = false;
+            if (trigger) onDateInputChanged(prefix);
+        }
+
+        function markPickerValidity(prefix, hard = false) {
+            const wrap = document.querySelector(`.roc-date-picker[data-prefix="${prefix}"]`);
+            const state = getRocPickerState(prefix).state;
+            const invalid = state === 'invalid' || (hard && state === 'partial');
+            wrap?.classList.toggle('invalid', invalid);
+            return state === 'empty' || state === 'valid' || (!hard && state === 'partial');
+        }
+
+        function initRocPicker(prefix) {
+            ['RocYear', 'Month', 'Day'].forEach((suffix) => {
+                const el = document.getElementById(`${prefix}${suffix}`);
+                el.addEventListener('input', () => {
+                    if (suffix !== 'Day') updateDayList(prefix);
+                    markPickerValidity(prefix, false);
+                    if (!suppressAutoReparse) onDateInputChanged(prefix);
+                });
+                el.addEventListener('blur', () => {
+                    normalizeInputNumber(el, suffix === 'RocYear' ? 3 : 2);
+                    if (suffix !== 'Day') updateDayList(prefix);
+                    markPickerValidity(prefix, true);
+                    if (!suppressAutoReparse) onDateInputChanged(prefix);
+                });
+            });
+        }
+
+        function onDateInputChanged(prefix) {
+            if (prefix === 'nonlife') {
+                clearCalculatedOutput();
+                return;
+            }
+        }
+
+        function clearCalculatedOutput() {
+            latestLifeCorrection = null;
+            latestNonlifeCorrection = null;
+            document.getElementById('kpiArea').innerHTML = '';
+            document.getElementById('output').innerHTML = '';
+            document.getElementById('output').classList.remove('visible');
+        }
+
+        function clearNonlifeOnly() {
+            setRocPickerValue('nonlife', '', false);
+            markPickerValidity('nonlife', true);
+            clearCalculatedOutput();
+            const courseError = document.getElementById('courseError');
+            if (courseError) courseError.textContent = '';
+        }
+
+        function extractLifeRegisterDateFromDoc(doc, fallbackText = '') {
+            const text = (doc?.body?.innerText || doc?.documentElement?.textContent || fallbackText || '').replace(/\s+/g, '');
+            const m = text.match(/壽險初次登錄日期[:：](\d{2,3}\/\d{1,2}\/\d{1,2})/);
+            return m ? normalizeRocDateText(m[1]) : '';
+        }
+
+        function extractLiaRecordsFromHtml(html) {
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const tokens = [...doc.querySelectorAll('td[align="center"]')].map(td => cleanLiaCellValue(td.textContent)).filter(Boolean);
+            const records = [];
+            let currentYear = null;
+            let pendingCode = null;
+            tokens.forEach(t => {
+                if (/^\d{3}$/.test(t)) {
+                    currentYear = parseInt(t, 10);
+                    pendingCode = null;
+                    return;
+                }
+                if (/^A[A-Z0-9]{8}$/.test(t)) {
+                    pendingCode = t;
+                    return;
+                }
+                if (/^\d{3}\/\d{1,2}\/\d{1,2}$/.test(t) && pendingCode && currentYear) {
+                    const date = parseRocDateStrict(t);
+                    if (date) {
+                        {
+                            const meta = getCourseMeta(pendingCode);
+                            records.push({
+                                name: pendingCode,
+                                code: pendingCode,
+                                unit: meta.unit,
+                                courseName: meta.courseName,
+                                date,
+                                rawYear: currentYear,
+                                units: 1,
+                                originalOrder: records.length + 1
+                            });
+                        }
+                    }
+                    pendingCode = null;
+                }
+            });
+            return {
+                doc,
+                htmlLifeDate: extractLifeRegisterDateFromDoc(doc, html),
+                records
+            };
+        }
+        async function readFileAsBig5(file) {
+            const buf = await file.arrayBuffer();
+            return new TextDecoder('big5').decode(buf);
+        }
+
+        function renderCourseTable() {
+            const tbody = document.getElementById('courseBody');
+            if (!parsedRecords.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="hint">尚未匯入資料。</td></tr>';
+                return;
+            }
+            tbody.innerHTML = parsedRecords.map((r, idx) => `<tr>
+                <td>${idx + 1}</td>
+                <td>${r.rawYear}</td>
+                <td>${escapeHtml(r.code)}</td>
+                <td>${escapeHtml(r.unit || '-')}</td>
+                <td class="course-name-cell">${escapeHtml(r.courseName || '-')}</td>
+                <td>${formatDate(r.date)}</td>
+            </tr>`).join('');
+        }
+        async function parseSelectedFile() {
+            const file = document.getElementById('liaHtmlUpload').files[0];
+            if (!file) {
+                document.getElementById('parseMessage').className = 'status-box error';
+                document.getElementById('parseMessage').textContent = '請先選擇公會查詢結果 HTML 檔。';
+                return false;
+            }
+            latestFileName = file.name;
+            clearNonlifeOnly();
+            document.getElementById('liaHtmlFileName').textContent = file.name;
+            document.getElementById('liaHtmlFileName').classList.add('selected');
+            try {
+                latestHtmlText = await readFileAsBig5(file);
+                const {
+                    htmlLifeDate,
+                    records
+                } = extractLiaRecordsFromHtml(latestHtmlText);
+                if (!htmlLifeDate) throw new Error('找不到「壽險初次登錄日期：YYY/MM/DD」，請確認上傳的是公會查詢結果完整網頁。');
+                if (!records.length) throw new Error('未解析到課程資料。請確認上傳的是查詢結果頁，而非查詢輸入頁。');
+                parsedRecords = records;
+                setRocPickerValue('life', htmlLifeDate, false);
+                renderCourseTable();
+                clearCalculatedOutput();
+                document.getElementById('parseMessage').className = 'status-box';
+                document.getElementById('parseMessage').textContent = `已選擇：${file.name}\n等待進入下一步後檢視解析結果。`;
+                showSuccessModal(`解析成功\n壽險初次登錄日：${htmlLifeDate}\n解析課程筆數：${records.length}`);
+                return true;
+            } catch (err) {
+                parsedRecords = [];
+                renderCourseTable();
+                clearCalculatedOutput();
+                document.getElementById('parseMessage').className = 'status-box error';
+                document.getElementById('parseMessage').textContent = err.message || String(err);
+                return false;
+            }
+        }
+
+        function getYearPeriod(startDate, offset) {
+            const year = startDate.getFullYear() + offset;
+            const start = new Date(year, startDate.getMonth(), startDate.getDate());
+            const end = new Date(year + 1, startDate.getMonth(), startDate.getDate() - 1);
+            return {
+                offset,
+                rocYear: rocYear(start),
+                label: `${rocYear(start)}年度（第${offset+1}年）`,
+                start,
+                end
+            };
+        }
+
+        function buildComplianceYears(startDate, throughDate) {
+            const arr = [];
+            for (let i = 0; i < MAX_YEARS; i++) {
+                const p = getYearPeriod(startDate, i);
+                arr.push(p);
+                if (p.end >= throughDate) break;
+            }
+            return arr;
+        }
+
+        function findPeriodByDate(date, periods) {
+            return periods.find(p => date >= p.start && date <= p.end) || null;
+        }
+
+        function getNextPeriodObject(startDate, offset) {
+            return getYearPeriod(startDate, offset);
+        }
+
+        function correctComplianceRecords(startDate, courseEntries, label) {
+            if (!(startDate instanceof Date) || isNaN(startDate.getTime())) return {
+                label,
+                periods: [],
+                details: [],
+                statusRows: [],
+                completedByYear: {}
+            };
+            const today = new Date();
+            const maxCourseDate = courseEntries.length ? new Date(Math.max(...courseEntries.map(c => c.date))) : today;
+            const throughDate = new Date(Math.max(today, maxCourseDate));
+            const periods = buildComplianceYears(startDate, throughDate);
+            const sorted = [...courseEntries].sort((a, b) => a.date - b.date || a.originalOrder - b.originalOrder);
+            const completedByYear = {};
+            const details = [];
+            sorted.forEach(record => {
+                const period = findPeriodByDate(record.date, periods);
+                if (!period) return;
+                let remaining = record.units || 1;
+                const prevPeriod = periods.find(p => p.offset === period.offset - 1);
+                if (prevPeriod) {
+                    const prevDone = completedByYear[prevPeriod.rocYear] || 0;
+                    const prevLack = Math.max(0, REQUIRED_UNITS - prevDone);
+                    if (prevLack > 0 && remaining > 0) {
+                        const u = Math.min(remaining, prevLack);
+                        completedByYear[prevPeriod.rocYear] = prevDone + u;
+                        remaining -= u;
+                        details.push({
+                            source: record,
+                            targetYear: prevPeriod.rocYear,
+                            targetLabel: prevPeriod.label,
+                            actualLabel: prevPeriod.label,
+                            dateBelongYear: period.rocYear,
+                            dateBelongLabel: period.label,
+                            units: u,
+                            usageType: 'MAKEUP_PREVIOUS_YEAR',
+                        });
+                    }
+                }
+                if (remaining > 0) {
+                    const done = completedByYear[period.rocYear] || 0;
+                    const lack = Math.max(0, REQUIRED_UNITS - done);
+                    if (lack > 0) {
+                        const u = Math.min(remaining, lack);
+                        completedByYear[period.rocYear] = done + u;
+                        remaining -= u;
+                        details.push({
+                            source: record,
+                            targetYear: period.rocYear,
+                            targetLabel: period.label,
+                            actualLabel: period.label,
+                            dateBelongYear: period.rocYear,
+                            dateBelongLabel: period.label,
+                            units: u,
+                            usageType: 'CURRENT_YEAR',
+                        });
+                    }
+                }
+                if (remaining > 0) {
+                    details.push({
+                        source: record,
+                        targetYear: null,
+                        targetLabel: '超額未使用',
+                        actualLabel: period.label,
+                        dateBelongYear: period.rocYear,
+                        dateBelongLabel: period.label,
+                        units: remaining,
+                        usageType: 'UNUSED_EXCESS',
+                    });
+                }
+            });
+            const statusRows = periods.map((p, index) => {
+                const completed = Math.min(completedByYear[p.rocYear] || 0, REQUIRED_UNITS);
+                const lack = Math.max(0, REQUIRED_UNITS - completed);
+                const nextPeriod = periods[index + 1] || getNextPeriodObject(startDate, index + 1);
+                let status, badge;
+                if (today < p.start) {
+                    status = '尚未開始';
+                    badge = 'badge-muted';
+                } else if (completed >= REQUIRED_UNITS) {
+                    status = '已完成';
+                    badge = 'badge-ok';
+                } else if (nextPeriod && today <= nextPeriod.end) {
+                    status = '不足，可由下一年度補訓';
+                    badge = 'badge-warn';
+                } else {
+                    status = '不足，已逾補訓期限';
+                    badge = 'badge-danger';
+                }
+                return {
+                    ...p,
+                    completed,
+                    lack,
+                    status,
+                    badge
+                };
+            });
+            return {
+                label,
+                periods,
+                details,
+                statusRows,
+                completedByYear
+            };
+        }
+
+        function usageBadge(d) {
+            if (d.usageType === 'MAKEUP_PREVIOUS_YEAR') return '<span class="badge badge-blue">補前一年</span>';
+            if (d.usageType === 'CURRENT_YEAR') return '<span class="badge badge-ok">本年度認列</span>';
+            if (d.usageType === 'UNUSED_EXCESS') return '<span class="badge badge-warn">超額未使用</span>';
+            return '<span class="badge badge-danger">無法判斷</span>';
+        }
+
+        function usageClass(type) {
+            return type === 'MAKEUP_PREVIOUS_YEAR' ? 'split' : type === 'CURRENT_YEAR' ? 'ok' : type === 'UNUSED_EXCESS' ? 'unused' : 'danger';
+        }
+
+        function detailGroupYear(d) {
+            return d.usageType === 'UNUSED_EXCESS' ? d.dateBelongYear : d.targetYear;
+        }
+
+        function renderYearDetailTable(details, mode) {
+        if (!details.length) return '<div class="year-empty-detail">本年度尚無可顯示課程明細。</div>';
+        if (mode === 'cards') return `<div class="correction-card-grid">${details.map(d=>`<div class="correction-card">
+                <div class="correction-card-head"><span>${escapeHtml(d.source.code)}</span>${usageBadge(d)}</div>
+                <div class="correction-card-body">
+                    <div><span class="label">單元：</span>${escapeHtml(d.source.unit||'-')}</div>
+                    <div><span class="label">課程名稱：</span>${escapeHtml(d.source.courseName||'-')}</div>
+                    <div><span class="label">完訓日期：</span>${formatDate(d.source.date)}</div>
+                    <div><span class="label">公會顯示年度：</span>${d.source.rawYear}</div>
+                    <div><span class="label">完訓日落點年度：</span>${d.dateBelongLabel}</div>
+                    <div><span class="label">實際認列年度：</span><span class="${usageClass(d.usageType)}">${d.actualLabel}</span></div>
+                </div>
+            </div>`).join('')}</div>`;
+        return `<div class="table-wrap">
+            <table class="audit-detail-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>課程編碼</th>
+                        <th>單元</th>
+                        <th>課程名稱</th>
+                        <th>完訓日期</th>
+                        <th>公會顯示年度</th>
+                        <th>完訓日落點年度</th>
+                        <th>實際認列年度</th>
+                    </tr>
+                </thead>
+                <tbody>${details.map(d=>`<tr>
+                        <td>${d.source.originalOrder||''}</td>
+                        <td>${escapeHtml(d.source.code)}</td>
+                        <td>${escapeHtml(d.source.unit||'-')}</td>
+                        <td class="course-name-cell">${escapeHtml(d.source.courseName||'-')}</td>
+                        <td>${formatDate(d.source.date)}</td>
+                        <td>${d.source.rawYear||'-'}</td>
+                        <td>${d.dateBelongLabel}</td>
+                        <td><span class="${usageClass(d.usageType)}">${d.actualLabel}</span></td>
+                    </tr>`).join('')}</tbody>
+            </table>
+        </div>`;
+        }
+
+        function renderCorrectionResult(result, mode) {
+            const titleMap = {
+                cards: '逐筆校正卡片',
+                audit: '稽核明細表'
+            };
+            const grouped = result.details.reduce((acc, d) => {
+                const k = detailGroupYear(d);
+                if (k) {
+                    (acc[k] ||= []).push(d);
+                }
+                return acc;
+            }, {});
+            const body = result.statusRows.map((r, idx) => {
+                const details = grouped[r.rocYear] || [];
+                const id = `detail-${mode}-${result.label==='壽險'?'life':'nonlife'}-${r.rocYear}-${idx}`;
+                detailModalStore[id] = {
+                    title: `${result.label} ${r.label}`,
+                    html: renderYearDetailTable(details, mode)
+                };
+                return `<tr><td>${r.label}</td><td>${formatDate(r.start)} ～ ${formatDate(r.end)}</td><td>${r.completed} / ${REQUIRED_UNITS}</td><td><span class="badge ${r.badge}">${r.status}</span></td><td><button type="button" class="detail-modal-btn" data-detail-id="${id}">顯示明細</button></td></tr>`;
+            }).join('');
+            return `<h4>${result.label}年度校正結果</h4><table class="year-summary-table"><thead><tr><th>訓練年度</th><th>訓練期間</th><th>完成進度</th><th>狀態</th><th>明細</th></tr></thead><tbody>${body}</tbody></table>`;
+        }
+
+        function renderKpi(result) {
+            const used = result.details.filter(d => d.usageType !== 'UNUSED_EXCESS').length;
+            const unused = result.details.filter(d => d.usageType === 'UNUSED_EXCESS').length;
+            const makeup = result.details.filter(d => d.usageType === 'MAKEUP_PREVIOUS_YEAR').length;
+            return `<div class="kpi-grid"><div class="kpi-card"><div class="kpi-label">解析課程數</div><div class="kpi-value">${parsedRecords.length}</div></div><div class="kpi-card"><div class="kpi-label">已認列筆數</div><div class="kpi-value">${used}</div></div><div class="kpi-card"><div class="kpi-label">補前一年筆數</div><div class="kpi-value">${makeup}</div></div><div class="kpi-card"><div class="kpi-label">超額未使用筆數</div><div class="kpi-value">${unused}</div></div></div>`;
+        }
+
+        function calculate() {
+            markPickerValidity('life', true);
+            markPickerValidity('nonlife', true);
+            const lifeState = getRocPickerState('life'),
+                nonlifeState = getRocPickerState('nonlife');
+            const lifeValue = getRocPickerValue('life'),
+                nonlifeValue = getRocPickerValue('nonlife');
+            if (lifeState.state !== 'valid') {
+                alert('壽險初登錄日未成功解析，請回上一步重新上傳公會 HTML。');
+                return false;
+            }
+            if (nonlifeState.state === 'partial' || nonlifeState.state === 'invalid') {
+                alert('產險初登錄日尚未完整或格式不正確；若不需計算產險，請三欄皆留空。');
+                return false;
+            }
+            if (!parsedRecords.length) {
+                alert('請先上傳並解析公會查詢結果完整網頁。');
+                return false;
+            }
+            const lifeDate = parseRocDateStrict(lifeValue),
+                nonlifeDate = nonlifeValue ? parseRocDateStrict(nonlifeValue) : null;
+            const lifeStart = lifeDate.getFullYear() < 2020 ? new Date(2020, lifeDate.getMonth(), lifeDate.getDate()) : lifeDate;
+            const hasNonlife = !!nonlifeDate;
+            const nonlifeStart = hasNonlife ? (nonlifeDate.getFullYear() < 2020 ? new Date(2020, nonlifeDate.getMonth(), nonlifeDate.getDate()) : nonlifeDate) : null;
+            latestLifeCorrection = correctComplianceRecords(lifeStart, parsedRecords, '壽險');
+            latestNonlifeCorrection = hasNonlife ? correctComplianceRecords(nonlifeStart, parsedRecords, '產險') : null;
+            renderCalculatedOutput(hasNonlife);
+            return true;
+        }
+
+        function resultBlock(mode) {
+            let html = renderCorrectionResult(latestLifeCorrection, mode);
+            if (latestNonlifeCorrection) html += `<div style="margin-top:20px;">${renderCorrectionResult(latestNonlifeCorrection,mode)}</div>`;
+            else html += '<div class="status-box">產險初登錄日未填，僅顯示壽險年度校正結果。</div>';
+            return html;
+        }
+
+        function renderCalculatedOutput() {
+            detailModalStore = {};
+            document.getElementById('kpiArea').innerHTML = renderKpi(latestLifeCorrection);
+            document.getElementById('output').innerHTML = `<div class="tab"><ul class="uk-tab" id="resultTabs"><li class="uk-active"><a href="#" data-tab="0">方案一 卡片式</a></li><li><a href="#" data-tab="1">方案二 表格式</a></li></ul><ul id="resultSwitcher" class="uk-switcher uk-margin"><li class="uk-active">${resultBlock('cards')}</li><li>${resultBlock('audit')}</li></ul></div>`;
+            document.getElementById('output').classList.add('visible');
+        }
+
+        function openDetailModal(id) {
+            const item = detailModalStore[id];
+            if (!item) return;
+            document.getElementById('detailModalTitle').textContent = item.title;
+            document.getElementById('detailModalBody').innerHTML = item.html;
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        function bindCollapses() {
+            document.addEventListener('click', e => {
+                if (e.target.classList.contains('collapse-title')) {
+                    e.target.classList.toggle('collapsed');
+                    const next = e.target.nextElementSibling;
+                    if (next) next.classList.toggle('hidden');
+                }
+                if (e.target.classList.contains('detail-modal-btn')) {
+                    openDetailModal(e.target.dataset.detailId);
+                }
+                const tab = e.target.closest('#resultTabs a');
+                if (tab) {
+                    e.preventDefault();
+                    const idx = Number(tab.dataset.tab);
+                    document.querySelectorAll('#resultTabs li').forEach((li, i) => li.classList.toggle('uk-active', i === idx));
+                    document.querySelectorAll('#resultSwitcher>li').forEach((li, i) => li.classList.toggle('uk-active', i === idx));
+                }
+            });
+        }
+
+        function clearAll() {
+            parsedRecords = [];
+            latestLifeCorrection = null;
+            latestNonlifeCorrection = null;
+            latestHtmlText = '';
+            latestFileName = '';
+            setRocPickerValue('life', '', false);
+            setRocPickerValue('nonlife', '', false);
+            document.getElementById('liaHtmlUpload').value = '';
+            document.getElementById('liaHtmlFileName').textContent = '尚未選擇檔案';
+            document.getElementById('liaHtmlFileName').classList.remove('selected');
+            renderCourseTable();
+            document.getElementById('parseMessage').className = 'status-box';
+            document.getElementById('parseMessage').textContent = '尚未匯入公會網頁檔。';
+            document.getElementById('kpiArea').innerHTML = '';
+            document.getElementById('output').innerHTML = '';
+            document.getElementById('output').classList.remove('visible');
+            document.getElementById('courseError').textContent = '';
+            showStep(1);
+        }
+
+        populateDateLists();
+        initRocPicker('life');
+        initRocPicker('nonlife');
+        bindCollapses();
+        renderCourseTable();
+        updateSteps(1);
+        document.getElementById('goStep2').addEventListener('click', () => showStep(2));
+        document.querySelectorAll('[data-goto]').forEach(btn => btn.addEventListener('click', () => showStep(Number(btn.dataset.goto))));
+        document.getElementById('liaHtmlUpload').addEventListener('change', e => {
+            const file = e.target.files[0];
+            document.getElementById('liaHtmlFileName').textContent = file?.name || '尚未選擇檔案';
+            document.getElementById('liaHtmlFileName').classList.toggle('selected', !!file);
+            document.getElementById('parseMessage').className = 'status-box';
+            document.getElementById('parseMessage').textContent = file ? `已選擇：${file.name}` : '尚未匯入公會網頁檔。';
+        });
+        document.getElementById('parseAndGoStep3').addEventListener('click', async () => {
+            await parseSelectedFile();
+        });
+        document.getElementById('successModalOk').addEventListener('click', () => {
+            hideSuccessModal();
+            showStep(3);
+        });
+        document.getElementById('detailModalOk').addEventListener('click', closeDetailModal);
+        document.getElementById('detailModal').addEventListener('click', e => {
+            if (e.target.id === 'detailModal') closeDetailModal();
+        });
+        document.getElementById('calculateAndGoStep4').addEventListener('click', () => {
+            if (calculate()) showStep(4);
+        });
+        document.getElementById('clearNonlifeBtn').addEventListener('click', clearNonlifeOnly);
+        document.getElementById('returnStep1Btn').addEventListener('click', clearAll);
+        document.getElementById('clearBtn').addEventListener('click', clearAll);
+
+        bindStepClickEvents();
+        refreshStepClickableState();
+    </script>
+</body>
+
+</html>
